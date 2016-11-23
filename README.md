@@ -5,9 +5,48 @@ Compile `src/Player.java` and run
 
 Parameters
 ===========
-`java Player <rgb file path> <wav file path> [frame width, optional] [frame height, optional] [fps, optional]`
+`java Player <rgb file path> <wav file path> [width, optional] [height, optional] [fps, optional]`
 
 Default value:
-frame width = 480frame 
-height = 270
-fps = 30
+* width = 480
+* height = 270
+* fps = 30
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
