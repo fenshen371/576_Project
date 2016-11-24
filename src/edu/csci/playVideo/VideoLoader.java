@@ -68,18 +68,18 @@ public class VideoLoader implements Runnable {
     }
 
     public void run() {
-        long frameDuration = Math.round(1000 / fps);
+        long frameDuration = Math.round(1e9 / fps);
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         JLabel lbImg = new JLabel(new ImageIcon(img));
 
         try {
             InputStream is = new FileInputStream(videoFilePath);
 
-            long lastTime = System.currentTimeMillis();
+            long lastTime = System.nanoTime();
             while (true){
                 boolean thisVariableIsUsedHereToRefreshTheValueOfIsPlaying = isPlaying;
                 if (isPlaying) {
-                    long time = System.currentTimeMillis();
+                    long time = System.nanoTime();
                     //time to fresh
                     if (time - lastTime >= frameDuration) {
                         img = getFrame(is, width, height);

@@ -24,9 +24,9 @@ public class MyPlayer {
         int height = 270;
         int fps = 30;
         if (args.length >= 4){
-            width = Integer.getInteger(args[2]);
-            height = Integer.getInteger(args[3]);
-            if (args.length == 5) fps = Integer.getInteger(args[4]);
+            width = Integer.valueOf(args[2]);
+            height = Integer.valueOf(args[3]);
+            if (args.length == 5) fps = Integer.valueOf(args[4]);
         }
 
         //Initialize the player
