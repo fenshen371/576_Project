@@ -16,6 +16,7 @@ public class VideoLoader implements Runnable {
     private int width = 480;
     private int height = 470;
     private int fps = 30;
+    private boolean notLastFrame = true;
 
     public void setResolution(int width, int height) {
         this.width = width;
@@ -40,7 +41,9 @@ public class VideoLoader implements Runnable {
         BufferedImage frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
         try {
-            is.read(bytes, 0, frame_size);
+            //check if we have reached the end of the video
+            int bitsRead = is.read(bytes, 0, frame_size);
+            if (bitsRead < frame_size) notLastFrame = false;
 
             int ind = 0;
             for(int y = 0; y < height; y++){
@@ -76,7 +79,7 @@ public class VideoLoader implements Runnable {
             InputStream is = new FileInputStream(videoFilePath);
 
             long lastTime = System.nanoTime();
-            while (true){
+            while (notLastFrame){
                 boolean thisVariableIsUsedHereToRefreshTheValueOfIsPlaying = isPlaying;
                 if (isPlaying) {
                     long time = System.nanoTime();
