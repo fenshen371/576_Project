@@ -16,7 +16,7 @@ public class VideoLoader implements Runnable {
     private int width = 480;
     private int height = 470;
     private int fps = 30;
-    private boolean notLastFrame = true;
+    public boolean notLastFrame = true;
 
     public void setResolution(int width, int height) {
         this.width = width;
@@ -25,6 +25,10 @@ public class VideoLoader implements Runnable {
 
     public void setFps(int val){
         this.fps = val;
+    }
+    
+    public VideoLoader(){
+    	
     }
 
     VideoLoader(String name, String path, JFrame frame) {
@@ -35,7 +39,7 @@ public class VideoLoader implements Runnable {
     }
 
     //read one frame from the rgb file
-    private BufferedImage getFrame(InputStream is, int width, int height){
+    public BufferedImage getFrame(InputStream is, int width, int height){
         int frame_size = width * height * 3;
         byte[] bytes = new byte[frame_size];
         BufferedImage frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
