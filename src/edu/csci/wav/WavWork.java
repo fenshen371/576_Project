@@ -101,10 +101,10 @@ public class WavWork {
         double secondsToBreakpoint = BreakpointInNanoTime / 1e9;
         double samplesToBreakpoint = sampleRate * secondsToBreakpoint;
         long bytesToBreakpoint = Math.round(samplesToBreakpoint * sampleSize * channelNum / 8);
-        long bytesInPointOneSecond = Math.round(sampleSize * sampleRate * channelNum / 800);
-        long bytesToSkip = bytesToBreakpoint - bytesInPointOneSecond;
-        long bytesToSkip2 = bytesToBreakpoint + bytesInPointOneSecond;
-        long offsetOfLastByteToMeasure = bytesToSkip2 + bytesInPointOneSecond;
+        long bytesIn10MilliSeconds = Math.round(sampleSize * sampleRate * channelNum / 800);
+        long bytesToSkip = bytesToBreakpoint - bytesIn10MilliSeconds;
+        long bytesToSkip2 = bytesToBreakpoint + bytesIn10MilliSeconds;
+        long offsetOfLastByteToMeasure = bytesToSkip2 + bytesIn10MilliSeconds;
         if (bytesToSkip <= 0 || offsetOfLastByteToMeasure >= audioLengthInBytes) return true;
         double freq1 = highestFrequency(bytesToSkip);
         double freq2 = highestFrequency(bytesToSkip2);
