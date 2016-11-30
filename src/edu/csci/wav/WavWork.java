@@ -86,8 +86,6 @@ public class WavWork {
                     max_index = i;
                 }
             }
-            System.out.println("max mag " + String.valueOf(max_magnitude));
-            System.out.println("fft array size " + String.valueOf(data.length));
             return max_index * sampleRate / N;
         } catch (IOException e) {
             e.printStackTrace();
