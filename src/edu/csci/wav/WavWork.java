@@ -120,7 +120,6 @@ public class WavWork {
     }
 
     private double entropy(double[] a) {
-        System.out.println("20khz: " +  String.valueOf(a[N/2 - 1]));
         //calculate start index and end index of frequencies between 1khz and 4khz
         //int st = (int)Math.round(Math.floor(1000 * N / frameRate));
         //int ed = (int)Math.round(Math.ceil(4000 * N / frameRate));
@@ -144,8 +143,13 @@ public class WavWork {
     public boolean volumeChanged(long startTimeInMilliSecond){
         double[] test1 = getMagnitude(startTimeInMilliSecond - 100);
         double freq1 = getMainFreq(test1);
+        System.out.println("frequency 1: " + String.valueOf(freq1));
+        System.out.println("entropy 1: " + String.valueOf(entropy(test1)));
         double[] test2 = getMagnitude(startTimeInMilliSecond + 100);
         double freq2 = getMainFreq(test2);
+        System.out.println("frequency 2: " + String.valueOf(freq2));
+        System.out.println("entropy 2: " + String.valueOf(entropy(test2)));
+        System.out.println("L2 distance: " + String.valueOf(L2Distance(test1, test2)));
         return hugeDifference(freq1, freq2, 0.3333);
     }
 }
