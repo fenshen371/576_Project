@@ -17,7 +17,7 @@ public class WavWork {
     private AudioFormat format;
     private int channelNum;
     private double frameRate;
-    private int N = 1024 * 2; //size of FFT and sample window
+    private int N = 1024; //size of FFT and sample window
 
     //path of the wav file you want to check
     public WavWork(String filePath){
@@ -94,9 +94,11 @@ public class WavWork {
     }
 
     private double getMainFreq(double[] magnitude) {
+        int st = (int)Math.round(Math.floor(1000 * N / frameRate));
+        int ed = (int)Math.round(Math.ceil(4000 * N / frameRate));
         double maxVal = -1;
         int maxInd = 0;
-        for (int i = 1; i < N / 2; i++) {
+        for (int i = st; i < ed; i++) {
             if (magnitude[i] > maxVal) {
                 maxVal = magnitude[i];
                 maxInd = i;
@@ -109,9 +111,8 @@ public class WavWork {
         //calculate start index and end index of frequencies between 1khz and 4khz
         //int st = (int)Math.round(Math.floor(1000 * N / frameRate));
         //int ed = (int)Math.round(Math.ceil(4000 * N / frameRate));
-        int st = 1;
-        int ed = a.length/2;
-
+        int st = 0;
+        int ed = a.length;
         double dist = 0;
         for (int i = st; i < ed; i++) {
             dist += (a[i] - b[i]) * (a[i] - b[i]);
@@ -121,10 +122,10 @@ public class WavWork {
 
     private double entropy(double[] a) {
         //calculate start index and end index of frequencies between 1khz and 4khz
-        //int st = (int)Math.round(Math.floor(1000 * N / frameRate));
-        //int ed = (int)Math.round(Math.ceil(4000 * N / frameRate));
-        int st = 1;
-        int ed = a.length/2;
+        int st = (int)Math.round(Math.floor(1000 * N / frameRate));
+        int ed = (int)Math.round(Math.ceil(4000 * N / frameRate));
+        //int st = 1;
+        //int ed = a.length;
         double sum = 0;
         for (int i = st; i < ed; i++) sum += a[i];
         if (sum < 0.001) return 0;
@@ -136,20 +137,46 @@ public class WavWork {
         return entropy;
     }
 
+    /**
+     * Given a break point, this function get 10 short pieces of audio data within 1s after it.
+     * Suppose the given time point is x, then the 10 pieces are at the time point of:
+     * x, x+0.1s, x+0.2s, ..., xx+0.9s
+     * Currently, this function returns the average frequency distribution from 1khz to 4khz
+    */
+    private double[] avgAnalysis(long startTimeInMilliSecond) {
+        int st = (int)Math.round(Math.floor(1000 * N / frameRate));
+        int ed = (int)Math.round(Math.ceil(4000 * N / frameRate));
+        double[] powerDist = new double[ed - st + 1];
+        for (int i = 0; i < 10; i++) {
+            double[] mag = getMagnitude(startTimeInMilliSecond + i * 100);
+            for (int j = st; j <= ed; j++) {
+                if (i == 0) powerDist[j-st] = mag[j];
+                else powerDist[j-st] += mag[j] / 10;
+            }
+        }
+        return powerDist;
+    }
+
+    //get L2 form of the given vector
+    private double getLength(double[] powerDist) {
+        double length = 0;
+        for (int i = 0; i < powerDist.length; i++)
+            length += powerDist[i] * powerDist[i];
+        return Math.sqrt(length);
+    }
     /**call this function to check if the sound changes before and after the given time point.
      *the parameter BreakpointInNanoTime is the time point you want to check
      * It is the number of nano seconds pasted from the beginning of the wav file
      */
     public boolean volumeChanged(long startTimeInMilliSecond){
-        double[] test1 = getMagnitude(startTimeInMilliSecond - 100);
-        double freq1 = getMainFreq(test1);
-        System.out.println("frequency 1: " + String.valueOf(freq1));
-        System.out.println("entropy 1: " + String.valueOf(entropy(test1)));
-        double[] test2 = getMagnitude(startTimeInMilliSecond + 100);
-        double freq2 = getMainFreq(test2);
-        System.out.println("frequency 2: " + String.valueOf(freq2));
-        System.out.println("entropy 2: " + String.valueOf(entropy(test2)));
-        System.out.println("L2 distance: " + String.valueOf(L2Distance(test1, test2)));
-        return hugeDifference(freq1, freq2, 0.3333);
+        double[] period1 = avgAnalysis(startTimeInMilliSecond - 1000);
+        double[] period2 = avgAnalysis(startTimeInMilliSecond + 100);
+        double dist = L2Distance(period1, period2);
+        double length1 = getLength(period1);
+        double length2 = getLength(period2);
+        System.out.println("length of frequency magnitude distribution vector 1: " + String.valueOf(length1));
+        System.out.println("length of frequency magnitude distribution vector 2: " + String.valueOf(length2));
+        System.out.println("L2 distance between vector 1 and 2: " + String.valueOf(dist));
+        return dist > Math.max(length1, length2) * 0.55;
     }
 }

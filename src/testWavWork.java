@@ -4,9 +4,9 @@ import edu.csci.wav.WavWork;
  */
 public class testWavWork {
     public static void main(String[] args) {
-        //String path = "../data/data_test1.wav";
-        WavWork ww = new WavWork(args[0]);
+        String path = "../data/data_test1.wav";
+        WavWork ww = new WavWork(path);
         //String num = "79000000000";
-        ww.volumeChanged(Long.valueOf(args[1]));
+        ww.volumeChanged(Long.valueOf(args[0]));
     }
 }
