@@ -93,6 +93,6 @@ public class Filter {
 	
 	public static void main(String[] args) throws FileNotFoundException{
 		Filter filter = new Filter();
-		filter.countDiffArray("dataset/data_test2.rgb");
+		filter.countDiffArray("../data/data_test1.rgb");
 	}
 }
