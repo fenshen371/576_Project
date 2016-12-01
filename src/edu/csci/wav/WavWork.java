@@ -20,6 +20,7 @@ public class WavWork {
     private int channelNum;
     private double sampleRate;
     private double MaxSampleValue;
+    private int N = 4096; //size of FFT and sample window
 
     //path of the wav file you want to check
     public WavWork(String filePath){
@@ -53,10 +54,9 @@ public class WavWork {
     }
 
     //capture the primal frequency in the next several milliseconds
-    private double highestFrequency(long bytesToSkip) {
-        int N = 1024; //size of FFT and sample window
+    private double[] getMagnitude(long bytesToSkip) {
         Complex[] data = new Complex[N]; //input data buffer
-        double[] magnitude = new double[N];
+        double[] magnitude = new double[N / 2];
         try{
             //read audio data
             audioStream.seek(bytesToSkip);
@@ -74,23 +74,45 @@ public class WavWork {
             //perform FFT
             data = FFT.fft(data);
 
-            //calculate power spectrum and find the largest peak in power spectrum
-            double max_magnitude = -1e10;
-            int max_index = -1;
+            //calculate power spectrum
             for (int i = 1; i < N / 2; i++) {
                 double re = data[i].re();
                 double im = data[i].im();
                 magnitude[i] = Math.sqrt(re * re + im * im);
-                if (magnitude[i] > max_magnitude) {
-                    max_magnitude = magnitude[i];
-                    max_index = i;
-                }
             }
-            return max_index * sampleRate / N;
+            return magnitude;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return 0;
+        return magnitude;
+    }
+
+
+    private double L2Distance(double[] a, double[] b) {
+        //calculate start index and end index of frequencies between 1khz and 4khz
+        int st = (int)Math.round(Math.floor(1000 * N / sampleRate));
+        int ed = (int)Math.round(Math.ceil(4000 * N / sampleRate));
+
+        double dist = 0;
+        for (int i = st; i <= ed; i++) {
+            dist += (a[i] - b[i]) * (a[i] - b[i]);
+        }
+        return Math.sqrt(dist);
+    }
+
+    private double entropy(double[] a) {
+        //calculate start index and end index of frequencies between 1khz and 4khz
+        int st = (int)Math.round(Math.floor(1000 * N / sampleRate));
+        int ed = (int)Math.round(Math.ceil(4000 * N / sampleRate));
+        double sum = 0;
+        for (int i = st; i <= ed; i++) sum += a[i];
+        if (sum < 0.001) return 0;
+        double entropy = 0;
+        for (int i = st; i <= ed; i++) {
+            double prob = a[i] / sum;
+            entropy += -(prob * Math.log(prob));
+        }
+        return entropy;
     }
 
     /**call this function to check if the sound changes before and after the given time point.
@@ -101,14 +123,16 @@ public class WavWork {
         double secondsToBreakpoint = BreakpointInNanoTime / 1e9;
         double samplesToBreakpoint = sampleRate * secondsToBreakpoint;
         long bytesToBreakpoint = Math.round(samplesToBreakpoint * sampleSize * channelNum / 8);
-        long bytesIn10MilliSeconds = Math.round(sampleSize * sampleRate * channelNum / 800);
+        long bytesIn10MilliSeconds = Math.round(sampleSize * sampleRate * channelNum / 80);
         long bytesToSkip = bytesToBreakpoint - bytesIn10MilliSeconds;
         long bytesToSkip2 = bytesToBreakpoint + bytesIn10MilliSeconds;
         long offsetOfLastByteToMeasure = bytesToSkip2 + bytesIn10MilliSeconds;
         if (bytesToSkip <= 0 || offsetOfLastByteToMeasure >= audioLengthInBytes) return true;
-        double freq1 = highestFrequency(bytesToSkip);
-        double freq2 = highestFrequency(bytesToSkip2);
-        System.out.println("freq1:" + String.valueOf(freq1) + " freq2:" + String.valueOf(freq2));
-        return hugeDifference(freq1, freq2, 0.35);
+        double[] piece1 = getMagnitude(bytesToSkip);
+        double[] piece2 = getMagnitude(bytesToSkip2);
+        System.out.println("L2 distance: " + String.valueOf(L2Distance(piece1, piece2)));
+        System.out.println("1st entropy: " + String.valueOf(entropy(piece1)));
+        System.out.println("2nd entropy: " + String.valueOf(entropy(piece2)));
+        return true;
     }
 }
