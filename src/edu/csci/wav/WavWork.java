@@ -174,9 +174,6 @@ public class WavWork {
         double dist = L2Distance(period1, period2);
         double length1 = getLength(period1);
         double length2 = getLength(period2);
-        System.out.println("length of frequency magnitude distribution vector 1: " + String.valueOf(length1));
-        System.out.println("length of frequency magnitude distribution vector 2: " + String.valueOf(length2));
-        System.out.println("L2 distance between vector 1 and 2: " + String.valueOf(dist));
         return dist > Math.max(length1, length2) * 0.55;
     }
 }
