@@ -36,5 +36,16 @@ public class VideoUtil {
 		}
 		return img;
 	}
+
+	public static void skip_frame(InputStream is, int width, int height, int frame_count) {
+		int frame_size = width * height * 3;
+		int bytes_skip = frame_size * frame_count;
+		try {
+			is.skip(bytes_skip);
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
 
