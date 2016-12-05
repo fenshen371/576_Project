@@ -45,8 +45,6 @@ public class Writer {
      * @param endFrameIndex The last frame index of the source rgb file to copy. Excluded.
      */
     public void load(String rgbFile, String wavFile, long startFrameIndex, long endFrameIndex){
-        System.out.println("start index:" + String.valueOf(startFrameIndex));
-        System.out.println("end index:" + String.valueOf(endFrameIndex));
         try {
             InputStream is = new FileInputStream(rgbFile);
             byte[] oneFrameData = new byte[frame_size];

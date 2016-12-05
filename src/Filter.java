@@ -18,6 +18,10 @@ public class Filter {
 	
     VideoLoader loader;
 
+	public Filter(String rgbFile, String wavFile){
+		videoFilePath = rgbFile;
+		wavFilePath = wavFile;
+	}
     public ArrayList<Integer> countDiffArray(String videoFilePath, String wavFilePath) throws FileNotFoundException{
     	loader = new VideoLoader();
 		WavWork ww = new WavWork(wavFilePath);
@@ -53,7 +57,6 @@ public class Filter {
 	 * @throws FileNotFoundException
 	 */
 	public ArrayList<Integer> getAdBoundaries() throws FileNotFoundException {
-		System.out.println("Determining advertisements...");
 		ArrayList<Integer> switches = getSwitchPoints();
 		boolean[] marks = markAd(switches);
 		ArrayList<Integer> res = new ArrayList<Integer>();
@@ -208,7 +211,7 @@ public class Filter {
     	}
     	return y;
     }
-	
+	/*
 	public static void main(String[] args) throws FileNotFoundException{
 		Filter filter = new Filter();
 		//filter.countDiffArray("../data/data_test2.rgb", "../data/data_test2.wav");
@@ -219,4 +222,5 @@ public class Filter {
 			System.out.println("Ad range: " + String.valueOf(st) + ", " + String.valueOf(ed));
 		}
 	}
+	*/
 }

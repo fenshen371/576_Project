@@ -9,11 +9,14 @@ import java.util.ArrayList;
  */
 public class testWavWork {
     public static void main(String[] args) throws FileNotFoundException {
-        Filter filter = new Filter();
         String sourceRGB = "../data/data_test1.rgb";
         String sourceWav = "../data/data_test1.wav";
-        //filter.countDiffArray("../data/data_test2.rgb", "../data/data_test2.wav");
+        Filter filter = new Filter(sourceRGB, sourceWav);
+        System.out.println("Determining advertisements...");
         ArrayList<Integer> boundaries = filter.getAdBoundaries();
+
+        System.out.println("Generating result rgb file and wave file...");
+        //cmd line parameters: path of rgb file and wave file that you want to create
         Writer test = new Writer(args[0], args[1]);
         for (int i = 0; i < boundaries.size(); i += 2){
             if (i == 0 && boundaries.get(i) != 0)
