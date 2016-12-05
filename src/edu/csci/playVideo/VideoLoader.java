@@ -46,8 +46,8 @@ public class VideoLoader implements Runnable {
 
         try {
             //check if we have reached the end of the video
-            int bitsRead = is.read(bytes, 0, frame_size);
-            if (bitsRead < frame_size) notLastFrame = false;
+            int bytesRead = is.read(bytes, 0, frame_size);
+            if (bytesRead < frame_size) notLastFrame = false;
 
             int ind = 0;
             for(int y = 0; y < height; y++){
@@ -68,6 +68,38 @@ public class VideoLoader implements Runnable {
             e.printStackTrace();
         }
         return frame;
+    }
+
+    //read one frame from the rgb file
+    public byte[] getBytes(InputStream is, int width, int height){
+        int frame_size = width * height * 3;
+        byte[] bytes = new byte[frame_size];
+        BufferedImage frame = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        try {
+            //check if we have reached the end of the video
+            int bytesRead = is.read(bytes, 0, frame_size);
+            if (bytesRead < frame_size) notLastFrame = false;
+
+            int ind = 0;
+            for(int y = 0; y < height; y++){
+
+                for(int x = 0; x < width; x++){
+                    byte r = bytes[ind];
+                    byte g = bytes[ind+height*width];
+                    byte b = bytes[ind+height*width*2];
+
+                    int pix = 0xff000000 | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
+                    frame.setRGB(x,y,pix);
+                    ind++;
+                }
+            }
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
     }
 
     public void pauseOrResume(){

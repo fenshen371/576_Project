@@ -70,6 +70,7 @@ public class Filter {
 
 	/**
 	 * This function returns an array of frame indices where the camera switches to a different scene,
+	 * The last value in the array is the index of the last frame, in other word, the number of frames of the rgb file.
 	 */
 	public ArrayList<Integer> getSwitchPoints() throws FileNotFoundException{
 		loader = new VideoLoader();

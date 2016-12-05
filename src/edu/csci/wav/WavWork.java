@@ -51,7 +51,7 @@ public class WavWork {
 
     //capture the primal frequency in the next several milliseconds
     private double[] getMagnitude(double startTimeInMilliSecond) {
-        long framesToSkip = Math.round((startTimeInMilliSecond / 1000) * frameRate);
+        long framesToSkip = Math.round(startTimeInMilliSecond / 1000.0 * frameRate);
         int bufferSize = 48000;
         int[] buffer = new int[bufferSize * channelNum];
         double[] magnitude = new double[N / 2];
@@ -61,8 +61,7 @@ public class WavWork {
                 if (framesToSkip >= bufferSize){
                     curWav.readFrames(buffer, bufferSize);
                     framesToSkip -= bufferSize;
-                }
-                else {
+                } else {
                     curWav.readFrames(buffer, (int)framesToSkip);
                     framesToSkip = 0;
                 }
