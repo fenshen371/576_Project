@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import edu.csci.utils.Interval;
 import edu.csci.playVideo.VideoLoader;
 import edu.csci.wav.WavWork;
 
@@ -56,10 +57,11 @@ public class Filter {
 	 * @return an array of frame indices where ad begins and ends. So every time you read from this array, you need to read two numbers!
 	 * @throws FileNotFoundException
 	 */
-	public ArrayList<Integer> getAdBoundaries() throws FileNotFoundException {
+	public ArrayList<Interval> getAdBoundaries() throws FileNotFoundException {
 		ArrayList<Integer> switches = getSwitchPoints();
 		boolean[] marks = markAd(switches);
 		ArrayList<Integer> res = new ArrayList<Integer>();
+
 		for (int i = 1; i < marks.length; i++) {
 			if (marks[i] == false && marks[i-1] == true) {
 				if (res.size() == 0) res.add(0);
@@ -68,7 +70,11 @@ public class Filter {
 				res.add(switches.get(i-1));
 			}
 		}
-		return res;
+
+		ArrayList<Interval> adBoundaries = new ArrayList<Interval>();
+		for (int i = 0; i < res.size(); i += 2)
+			adBoundaries.add(new Interval(res.get(i), res.get(i+1)));
+		return adBoundaries;
 	}
 
 	/**
@@ -215,10 +221,10 @@ public class Filter {
 	public static void main(String[] args) throws FileNotFoundException{
 		Filter filter = new Filter();
 		//filter.countDiffArray("../data/data_test2.rgb", "../data/data_test2.wav");
-		ArrayList<Integer> boundaries = filter.getAdBoundaries();
-		for (int i = 0; i < boundaries.size(); i = i + 2) {
-			double st = boundaries.get(i) / 30.0;
-			double ed = boundaries.get(i+1) / 30.0;
+		ArrayList<Interval> boundaries = filter.getAdBoundaries();
+		for (int i = 0; i < boundaries.size(); i++) {
+			double st = boundaries.get(i).startFrameIndex / 30.0;
+			double ed = boundaries.get(i+1).endFrameIndex / 30.0;
 			System.out.println("Ad range: " + String.valueOf(st) + ", " + String.valueOf(ed));
 		}
 	}
