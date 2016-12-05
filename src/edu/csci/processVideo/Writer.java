@@ -17,7 +17,7 @@ public class Writer {
     private WavFile wavOutputStream;
     private ArrayList<WavPiece> wavPieces = new ArrayList<WavPiece>();
     private int width = 480;
-    private int height = 470;
+    private int height = 270;
     private int frame_size = width * height * 3;
     private double fps = 30.0;
     private double wavFrameRate = 48000.0;
